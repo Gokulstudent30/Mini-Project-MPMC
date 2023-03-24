@@ -1,0 +1,42 @@
+#include <reg51.h>
+
+// Pin configurations for IR sensors
+sbit IR1 = P0^0;
+sbit IR2 = P0^1;
+
+void delay_us(unsigned int us) {
+    while(us--) {
+        // Each cycle of the loop takes 1us
+        _nop_();
+        _nop_();
+        _nop_();
+        _nop_();
+    }
+}
+
+void main() {
+    unsigned int time_taken;
+    float speed, distance = 10.0; // Distance between the two sensors is assumed to be 10cm
+    
+    while(1) {
+        // Wait for IR1 to detect an object
+        while(!IR1);
+        
+        // Start the timer
+        TR0 = 1;
+        
+        // Wait for IR2 to detect the same object
+        while(!IR2);
+        
+        // Stop the timer
+        TR0 = 0;
+        
+        // Calculate the time taken to cross the distance between the two sensors
+        time_taken = TH0*256 + TL0;
+        
+        // Calculate the speed
+        speed = distance / (time_taken * 12.0);
+        
+        // Display the speed on a 7-segment display or any other output device
+    }
+}
