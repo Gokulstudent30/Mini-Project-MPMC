@@ -1,0 +1,51 @@
+#include <reg51.h>
+
+// Pin configurations for servo motors
+sbit servo1 = P0^0;
+sbit servo2 = P0^1;
+sbit servo3 = P0^2;
+sbit servo4 = P0^3;
+
+void delay_ms(unsigned int ms) {
+    unsigned int i, j;
+    for(i=0; i<ms; i++) {
+        for(j=0; j<125; j++) {
+            // Each cycle of the inner loop takes approximately 1us
+            _nop_();
+        }
+    }
+}
+
+void rotate_servo(sbit servo, int angle) {
+    int pulse_width = 1500 + (angle * 10); // Calculate pulse width in microseconds
+    int i;
+    
+    for(i=0; i<50; i++) {
+        // Generate a 20ms pulse with the required pulse width
+        servo = 1;
+        delay_us(pulse_width);
+        servo = 0;
+        delay_us(20000 - pulse_width);
+    }
+}
+
+void main() {
+    while(1) {
+        // Check the traffic signals and rotate the servo motors accordingly
+        if(red_signal_detected()) {
+            rotate_servo(servo1, 90); // Rotate servo1 by +90 degrees
+            rotate_servo(servo2, 90); // Rotate servo2 by +90 degrees
+            rotate_servo(servo3, 90); // Rotate servo3 by +90 degrees
+            rotate_servo(servo4, 90); // Rotate servo4 by +90 degrees
+        }
+        else if(green_signal_detected()) {
+            rotate_servo(servo1, -90); // Rotate servo1 by -90 degrees
+            rotate_servo(servo2, -90); // Rotate servo2 by -90 degrees
+            rotate_servo(servo3, -90); // Rotate servo3 by -90 degrees
+            rotate_servo(servo4, -90); // Rotate servo4 by -90 degrees
+        }
+        else {
+            // Do nothing
+        }
+    }
+}
